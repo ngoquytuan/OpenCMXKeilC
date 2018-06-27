@@ -364,52 +364,5 @@ void modbus_slave_exe(void)
 	 }
 	
 }
-#define MODBUS_SLAVE_ADDRESS 0xF7
-int i;
 
-/*
-read_coils
-Input:     int8       address            Slave Address
-           int16      start_address      Address to start reading from
-           int16      quantity           Amount of addresses to read
-Output:    exception                     0 if no error, else the exception
-*/
-exception modbus_read_coils(uint8_t address, uint16_t start_address, uint16_t quantity)
-{
-   modbus_serial_send_start(address, FUNC_READ_COILS);
-
-   modbus_serial_putc(make8(start_address,1));
-   modbus_serial_putc(make8(start_address,0));
-
-   modbus_serial_putc(make8(quantity,1));
-   modbus_serial_putc(make8(quantity,0));
-
-   modbus_serial_send_stop();
-
-   //MODBUS_SERIAL_WAIT_FOR_RESPONSE();
-
-   return modbus_rx.error;
-}
-
-void read_all_coils()
-{
-   printf("Coils:\r\n");
-   if(!(modbus_read_coils(MODBUS_SLAVE_ADDRESS,0,8)))
-   {
-      printf("Data: ");
-      /*Started at 1 since 0 is quantity of coils*/
-      for(i=1; i < (modbus_rx.len); ++i)
-         printf("%X ", modbus_rx.data[i]);
-      printf("\r\n\r\n");
-   }
-   else
-   {
-      printf("<-**Exception %X**->\r\n\r\n", modbus_rx.error);
-   }
-}
-
-void modbus_master_exe(void)
-{
-	read_all_coils();
-}
 

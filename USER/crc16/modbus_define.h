@@ -17,7 +17,7 @@
 #define bit_clear(d,b) (d&=~(1<<b))
 #define bit_test(a,b) (a & (1<<b))!=0 
 #define make16(msb, lsb)  ((msb << 8) | lsb)
-
+#define make8(var,offset) ((var >> (offset*8)) & 0xff)
 #define _false 0
 #define _true  1
 #define FALSE 0
