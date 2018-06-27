@@ -52,3 +52,11 @@ uint16_t makecrc16(char *ptrToArray,uint8_t inputSize) //A standard CRC algorith
 		return 0;	
 	}
 }
+
+uint8_t swap_bits(uint8_t c)
+{
+   return ((c&1)?128:0)|((c&2)?64:0)|((c&4)?32:0)|((c&8)?16:0)|((c&16)?8:0)
+          |((c&32)?4:0)|((c&64)?2:0)|((c&128)?1:0);
+}
+
+

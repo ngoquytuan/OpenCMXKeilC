@@ -8,11 +8,7 @@
  uint32_t modbus_serial_wait=MODBUS_SERIAL_TIMEOUT;
 #endif
 uint8_t modbus_serial_new = 0;
-uint8_t swap_bits(uint8_t c)
-{
-   return ((c&1)?128:0)|((c&2)?64:0)|((c&4)?32:0)|((c&8)?16:0)|((c&16)?8:0)
-          |((c&32)?4:0)|((c&64)?2:0)|((c&128)?1:0);
-}
+
 struct MODBUSRX modbus_rx;
 
 /*Stages of MODBUS reception.  Used to keep our ISR fast enough.*/
@@ -96,8 +92,6 @@ void modbus_serial_send_start( uint8_t to,  uint8_t func)
    modbus_serial_crc.d=0xFFFF;
    modbus_serial_new=FALSE;
 
-   //RCV_OFF();
-
    delay_us(3500000/MODBUS_SERIAL_BAUD); //3.5 character delay
 
    modbus_serial_putc(to);
@@ -119,10 +113,6 @@ void modbus_serial_send_stop()
 
 
    delay_us(3500000/MODBUS_SERIAL_BAUD); //3.5 character delay
-
-   //RCV_ON();
-
-
    modbus_serial_crc.d=0xFFFF;
 }
 
@@ -146,7 +136,7 @@ void modbus_check_timeout(void)
 // Inputs:     Enable, used to turn timer on/off
 // Outputs:    None
 // Not used for ASCII mode
-void modbus_enable_timeout(int1 enable)
+void modbus_enable_timeout(uint8_t enable)
 {
    modbus_timeout_enabled = enable;
    set_ticks(0);
@@ -176,7 +166,7 @@ void modbus_timeout_now(void)
 // Outputs:    None
 void modbus_calc_crc(char data)
 {
-   int8 uIndex ; // will index into CRC lookup table
+   uint8_t uIndex ; // will index into CRC lookup table
 
    uIndex = (modbus_serial_crc.b[1]) ^ data; // calculate the CRC
    modbus_serial_crc.b[1] = (modbus_serial_crc.b[0]) ^ modbus_auchCRCHi[uIndex];
@@ -235,7 +225,7 @@ void incomming_modbus_serial(char c) {
 // Outputs:    TRUE if a message was received
 //             FALSE if no message is available
 // Note:       Data will be filled in at the modbus_rx struct:
-int1 modbus_kbhit()
+uint8_t modbus_kbhit()
 {
    modbus_check_timeout();
 

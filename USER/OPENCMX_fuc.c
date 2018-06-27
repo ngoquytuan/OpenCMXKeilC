@@ -134,7 +134,7 @@ void tasks(void)
     if (TimeDisplay == 1)
     {
       /* Display current time */
-      //Time_Display(RTC_GetCounter());
+      Time_Display(RTC_GetCounter());
       TimeDisplay = 0;
     }
 		
@@ -229,7 +229,7 @@ void hardware_init(void)
 	LCD_Gotoxy(1,0);
 	LCD_Puts(" in love?");
 	//lcdprintf("%d",mcu_clk.ADCCLK_Frequency);
-  //RTC_Init();
+  RTC_Init();
 	
 	/* WWDG configuration */
   //WWDG_Init();

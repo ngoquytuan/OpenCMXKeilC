@@ -5,20 +5,6 @@
 #include "delay.h"
 #include "modbus_phy_layer.h"
 #include "modbus_app_layer.h"
-const uint8_t SlaveID    = 0x11;//The Slave Address//ID (11 hex = address17 ),0 -> 255
-const uint8_t funcCode   = 0x03;// The Function Code 3 (read Analog Output Holding Registers)
-const uint8_t sizeOfData = 0x08;//The number of data bytes to follow (3 registers x 2 bytes each = 6 bytes), 1 -> 125
-typedef struct  {
-    uint8_t slaveID;
-    uint8_t func;
-	  uint8_t size;
-	  uint8_t data[sizeOfData+1];
-	  //uint16_t crc16;
-} modbusSlave;
-
-modbusSlave resfc03;
-
-char     sendData[20];
 
 /*************************************************************************************/
 	 uint8_t coils = 0x27;
@@ -28,56 +14,6 @@ char     sendData[20];
    int16 event_count = 0;
 	 uint8_t MODBUS = 1;// on modbus mode
 /*************************************************************************************/	 
-
-void updateModbusData( void)
-{
-	char i;
-	
-	resfc03.data[0] =0xAE;
-	resfc03.data[1] =0x41;
-	resfc03.data[2] =0x56;
-	resfc03.data[3] =0x52;
-	resfc03.data[4] =0x43;
-	resfc03.data[5] =0x40;
-	resfc03.data[6] =0;
-	resfc03.data[7] =0x01;
-	resfc03.data[sizeOfData] = 0;
-	resfc03.func    = funcCode;
-	resfc03.size    = sizeOfData;
-	resfc03.slaveID = SlaveID;
-	
-	
-	sendData[0] = resfc03.slaveID;
-	sendData[1] = resfc03.func;
-	sendData[2] = resfc03.size;/*
-	sendData[3] = resfc03.data[0]>>8;
-	sendData[4] = resfc03.data[0];
-	sendData[5] = resfc03.data[1]>>8;
-	sendData[6] = resfc03.data[1];
-	sendData[7] = resfc03.data[2]>>8;
-	sendData[8] = resfc03.data[2];*/
-	for(i=3;i<(3+sizeOfData);i++)
-	{
-	 sendData[i] = resfc03.data[i-3];
-	}
-	
-	//sprintf(sendData,"%c%c%c%s\r\n",SlaveID,funcCode,sizeOfData,resfc03.data);
-	makecrc16(sendData,sizeOfData+2);
-	//printf("%s\r\n",sendData);
-	u2Transmit(sendData,sizeOfData+5);
-}
-
-//void updateModbusDataTest(void)
-//{
-//  resfc03.slaveID = SlaveID;
-//	resfc03.func    = funcCode;
-//	resfc03.size    = sizeOfData;
-//	resfc03.data[0] = 1;
-//	resfc03.data[1] = 0xfe;
-//	resfc03.data[2] = 0xfff;
-//	u2Transmit(&resfc03,9);
-//	//makecrc16(resfc03,9);
-//}
 
 //---------------------------------------------------------------MODBUS_APP_LAYER_C
 // Purpose:    Initialize RS485 communication. Call this before
@@ -297,17 +233,14 @@ void modbus_write_multiple_registers_rsp(  uint8_t address,   uint16_t start_add
 }
 //---------------------------------------------------------------MODBUS_APP_LAYER_C
 
-//--------------------------------------------------------------------phy layer RTU
-
-
-
-
 //------------------------------------------------------------------------------------------------------
 void modbus_slave_exe(void)
 {
- int8 i,j,data;
- while(!modbus_kbhit()){};
-	//check address against our address, 0 is broadcast
+ uint8_t i,j,data;
+
+	 if(modbus_kbhit() == TRUE)
+	 {
+	 //check address against our address, 0 is broadcast
       if((modbus_rx.address == MODBUS_ADDRESS) || modbus_rx.address == 0)
       {
 				//printf("FUNC:%d\r\n",modbus_rx.func);
@@ -428,6 +361,8 @@ void modbus_slave_exe(void)
 					     //printf("We don't support the function, so return exception\r\n");
 				 }
 			}
+	 }
+	
 }
 
 
