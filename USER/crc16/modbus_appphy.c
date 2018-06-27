@@ -2,6 +2,7 @@
 #include "crc16.h"
 #include "uart.h"
 #include "modbus_phy_layer.h"
+#include "modbus_app_layer.h"
 #include "delay.h"
 #if (MODBUS_TYPE == MODBUS_TYPE_MASTER)
  uint32_t modbus_serial_wait=MODBUS_SERIAL_TIMEOUT;
@@ -229,4 +230,23 @@ void incomming_modbus_serial(char c) {
    #endif
 }
 
+// Purpose:    Get a message from the RS485 bus and store it in a buffer
+// Inputs:     None
+// Outputs:    TRUE if a message was received
+//             FALSE if no message is available
+// Note:       Data will be filled in at the modbus_rx struct:
+int1 modbus_kbhit()
+{
+   modbus_check_timeout();
+
+   if(!modbus_serial_new) return FALSE;
+   else if(modbus_rx.func & 0x80)           //did we receive an error?
+   {
+      modbus_rx.error = modbus_rx.data[0];  //if so grab the error and return true
+      modbus_rx.len = 1;
+   }
+   modbus_serial_new=FALSE;
+	 
+   return TRUE;
+}
 

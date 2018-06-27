@@ -4,6 +4,7 @@
 #include "modbus_define.h"
 #include "delay.h"
 #include "modbus_phy_layer.h"
+#include "modbus_app_layer.h"
 const uint8_t SlaveID    = 0x11;//The Slave Address//ID (11 hex = address17 ),0 -> 255
 const uint8_t funcCode   = 0x03;// The Function Code 3 (read Analog Output Holding Registers)
 const uint8_t sizeOfData = 0x08;//The number of data bytes to follow (3 registers x 2 bytes each = 6 bytes), 1 -> 125
@@ -20,8 +21,8 @@ modbusSlave resfc03;
 char     sendData[20];
 
 /*************************************************************************************/
-	 int8 coils = 2;
-   int8 inputs = 6;
+	 uint8_t coils = 0x27;
+   uint8_t inputs = 176;
    int16 hold_regs[] = {0x8822,0x7700,0x6600,0x5500,0x4400,0x3300,0x2200,0x1100};
    int16 input_regs[] = {0x1100,0x2200,0x3300,0x4400,0x5500,0x6600,0x7700,0x8800};
    int16 event_count = 0;
@@ -88,25 +89,6 @@ void modbus_init()
    //Turn on uart
 }
 
-// Purpose:    Get a message from the RS485 bus and store it in a buffer
-// Inputs:     None
-// Outputs:    TRUE if a message was received
-//             FALSE if no message is available
-// Note:       Data will be filled in at the modbus_rx struct:
-int1 modbus_kbhit()
-{
-   modbus_check_timeout();
-
-   if(!modbus_serial_new) return FALSE;
-   else if(modbus_rx.func & 0x80)           //did we receive an error?
-   {
-      modbus_rx.error = modbus_rx.data[0];  //if so grab the error and return true
-      modbus_rx.len = 1;
-   }
-   modbus_serial_new=FALSE;
-	 
-   return TRUE;
-}
 
 /*
 read_FIFO_queue_rsp
@@ -120,6 +102,29 @@ void modbus_exception_rsp(  uint8_t address,   uint16_t func, exception error)
    //printf("modbus_exception_rsp\r\n");
 	 modbus_serial_send_start(address, func|0x80);
    modbus_serial_putc(error);
+   modbus_serial_send_stop();
+}
+/*
+read_coils_rsp
+Input:     int8       address            Slave Address
+           int8       byte_count         Number of bytes being sent
+           int8*      coil_data          Pointer to an array of data to send
+Output:    void
+*/
+void modbus_read_coils_rsp(uint8_t address, uint8_t byte_count, uint8_t* coil_data)
+{
+   uint8_t i;
+
+   modbus_serial_send_start(address, FUNC_READ_COILS);
+
+   modbus_serial_putc(byte_count);
+
+   for(i=0; i < byte_count; ++i)
+   {
+      modbus_serial_putc(*coil_data);
+      coil_data++;
+   }
+
    modbus_serial_send_stop();
 }
 /*
@@ -300,7 +305,7 @@ void modbus_write_multiple_registers_rsp(  uint8_t address,   uint16_t start_add
 //------------------------------------------------------------------------------------------------------
 void modbus_slave_exe(void)
 {
- int8 i,j;
+ int8 i,j,data;
  while(!modbus_kbhit()){};
 	//check address against our address, 0 is broadcast
       if((modbus_rx.address == MODBUS_ADDRESS) || modbus_rx.address == 0)
@@ -315,7 +320,6 @@ void modbus_slave_exe(void)
                   modbus_exception_rsp(MODBUS_ADDRESS,modbus_rx.func,ILLEGAL_DATA_ADDRESS);
                else
                {
-                  int8 data;
 
                   if(modbus_rx.func == FUNC_READ_COILS)
                      data = coils>>(modbus_rx.data[1]);      //move to the starting coil
@@ -325,7 +329,7 @@ void modbus_slave_exe(void)
                   data = data & (0xFF>>(8-modbus_rx.data[3]));  //0 out values after quantity
 
                   if(modbus_rx.func == FUNC_READ_COILS)
-                     modbus_read_discrete_input_rsp(MODBUS_ADDRESS, 0x01, &data);
+                     modbus_read_coils_rsp(MODBUS_ADDRESS, 0x01, &data);
                   else
                      modbus_read_discrete_input_rsp(MODBUS_ADDRESS, 0x01, &data);
 

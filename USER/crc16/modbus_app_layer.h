@@ -23,7 +23,7 @@
 #ifndef MODBUS_APP_LAYER_H
 #define MODBUS_APP_LAYER_H
 #include "modbus_define.h"
-#include <modbus_phy_layer.h>
+#include "modbus_phy_layer.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //// Shared API                                                                       ////
