@@ -14,7 +14,7 @@
 #define int32  uint32_t
 
 #define bit_set(d,b) (d|=(1<<b)) 
-#define bit_clear(d,b) (d&=!(1<<b)) 
+#define bit_clear(d,b) (d&=~(1<<b))
 #define bit_test(a,b) (a & (1<<b))!=0 
 #define make16(msb, lsb)  ((msb << 8) | lsb)
 uint8_t swap_bits(uint8_t c);
