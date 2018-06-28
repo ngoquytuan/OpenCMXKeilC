@@ -4,9 +4,12 @@
 #include "modbus_phy_layer.h"
 #include "modbus_app_layer.h"
 #include "delay.h"
-#if (MODBUS_TYPE == MODBUS_TYPE_MASTER)
- uint32_t modbus_serial_wait=MODBUS_SERIAL_TIMEOUT;
-#endif
+//define how to put a character to uart
+void uart_putc(char c)
+{
+while (USART_GetFlagStatus(USART2, USART_FLAG_TC) == RESET); // wait for "Transmission Complete" flag cleared
+		USART_SendData(USART2,c);
+}
 uint8_t modbus_serial_new = 0;
 
 struct MODBUSRX modbus_rx;
@@ -23,18 +26,19 @@ union
 } modbus_serial_crc;
 
 
+//extern and put on SysTick_Handler
 uint32_t modbus_sticks;
-uint32_t get_ticks(void)
-{
-	return modbus_sticks;
-}
+//uint32_t get_ticks(void)
+//{
+//	return modbus_sticks;
+//}
 /* status of between byte timeout */
-uint8_t modbus_timeout_enabled = _false;
+//uint8_t modbus_timeout_enabled = _false;
 
-void set_ticks(uint32_t x)
-{
-	modbus_sticks = x;
-}
+//void set_ticks(uint32_t x)
+//{
+//	modbus_sticks = x;
+//}
 /* Table of CRC values for high–order byte */
 const unsigned char modbus_auchCRCHi[] = {
 0x00,0xC1,0x81,0x40,0x01,0xC0,0x80,0x41,0x01,0xC0,0x80,0x41,0x00,0xC1,0x81,
@@ -116,31 +120,7 @@ void modbus_serial_send_stop()
    modbus_serial_crc.d=0xFFFF;
 }
 
-// Purpose:    Check if we have timed out waiting for a response
-// Inputs:     None
-// Outputs:    None
-// Not used for ASCII mode
-void modbus_check_timeout(void)
-{
 
-   //modbus_timeout_enabled must be checked before get_ticks()
-   //so that if an interrupt happens it cannot be enabled after
-   //an old timer value is used in comparison
-   if(modbus_timeout_enabled && (get_ticks() > MODBUS_GETDATA_TIMEOUT))
-   {
-     modbus_timeout_now(); 
-   }
-}
-
-// Purpose:    Start our timeout timer
-// Inputs:     Enable, used to turn timer on/off
-// Outputs:    None
-// Not used for ASCII mode
-void modbus_enable_timeout(uint8_t enable)
-{
-   modbus_timeout_enabled = enable;
-   set_ticks(0);
-}
 
 // Purpose:    Handles a timeout when waiting for a response
 // Inputs:     None
@@ -153,13 +133,14 @@ void modbus_timeout_now(void)
       modbus_rx.len-=2;
       modbus_serial_new=TRUE;
 		  //printf("MODBUS DATA:%d %d %d %d %d %d\r\n",modbus_rx.data[0],modbus_rx.data[1],modbus_rx.data[2],modbus_rx.data[3],modbus_rx.data[4],modbus_rx.data[5]);
-   } else {
+   } 
+	 else 
+	 {
       modbus_serial_new=FALSE;
    }
 
    modbus_serial_crc.d=0xFFFF;
    modbus_serial_state=MODBUS_GETADDY;
-   modbus_enable_timeout(FALSE);
 }
 // Purpose:    Calculate crc of data and updates global crc
 // Inputs:     Character
@@ -179,12 +160,12 @@ void modbus_calc_crc(char data)
 void modbus_serial_putc(char c)
 {
 		// fputc(c, MODBUS_SERIAL);
-		while (USART_GetFlagStatus(USART2, USART_FLAG_TC) == RESET); // wait for "Transmission Complete" flag cleared
-		USART_SendData(USART2,c);
+		uart_putc(c);
 		modbus_calc_crc(c);
 		delay_us(1000000/MODBUS_SERIAL_BAUD); //one stop bit.  not exact
 }
 
+//Processing incomming data, put this fuction on uart receiver interrupt  
 void incomming_modbus_serial(char c) {
 
    if (!modbus_serial_new)
@@ -211,13 +192,9 @@ void incomming_modbus_serial(char c) {
          modbus_rx.data[modbus_rx.len]=c;
          modbus_rx.len++;
      }
-     modbus_enable_timeout(TRUE);
      modbus_calc_crc(c);
    }
 
-   #if (MODBUS_TYPE == MODBUS_TYPE_MASTER)
-      modbus_serial_wait=MODBUS_SERIAL_TIMEOUT;
-   #endif
 }
 
 // Purpose:    Get a message from the RS485 bus and store it in a buffer
@@ -227,7 +204,6 @@ void incomming_modbus_serial(char c) {
 // Note:       Data will be filled in at the modbus_rx struct:
 uint8_t modbus_kbhit()
 {
-   modbus_check_timeout();
 
    if(!modbus_serial_new) return FALSE;
    else if(modbus_rx.func & 0x80)           //did we receive an error?

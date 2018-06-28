@@ -134,7 +134,10 @@ void tasks(void)
     if (TimeDisplay == 1)
     {
       /* Display current time */
-			//modbus_master_exe();
+			
+			//for modbus master
+			//read_for_me(1);
+			
       //Time_Display(RTC_GetCounter());
       TimeDisplay = 0;
     }
@@ -163,7 +166,13 @@ void tasks(void)
 		if(u2out == ONTIME)
 		{
 			u2out = STOP;// Da nhan du ban tin UART => Xy ly
-			printf("UART2:%s\r\n",rx2_data_buff);
+			//printf("UART2:%s\r\n",rx2_data_buff);
+			
+			//for modbus slave
+			modbus_slave_exe(rx2_data_buff, USART2_index);
+			//for modbus master
+			//modbus_master_exe(rx2_data_buff, USART2_index);
+			
 			for(USART2_index=0;USART2_index<RX2_BUFFER_SIZE;USART2_index++)
                             {
                              rx2_data_buff[USART2_index]=0;

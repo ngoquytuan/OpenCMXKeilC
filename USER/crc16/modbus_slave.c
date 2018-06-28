@@ -6,24 +6,16 @@
 #include "modbus_phy_layer.h"
 #include "modbus_app_layer.h"
 
+#if (MODBUS_TYPE_SLAVE==1)
 /*************************************************************************************/
 	 uint8_t coils = 0x27;
    uint8_t inputs = 176;
    int16 hold_regs[] = {0x8822,0x7700,0x6600,0x5500,0x4400,0x3300,0x2200,0x1100};
    int16 input_regs[] = {0x1100,0x2200,0x3300,0x4400,0x5500,0x6600,0x7700,0x8800};
    int16 event_count = 0;
-	 uint8_t MODBUS = 1;// on modbus mode
+	 //uint8_t MODBUS = 1;// on modbus mode
 /*************************************************************************************/	 
 
-//---------------------------------------------------------------MODBUS_APP_LAYER_C
-// Purpose:    Initialize RS485 communication. Call this before
-//             using any other RS485 functions.
-// Inputs:     None
-// Outputs:    None
-void modbus_init()
-{
-   //Turn on uart
-}
 
 
 /*
@@ -234,10 +226,14 @@ void modbus_write_multiple_registers_rsp(  uint8_t address,   uint16_t start_add
 //---------------------------------------------------------------MODBUS_APP_LAYER_C
 
 //------------------------------------------------------------------------------------------------------
-void modbus_slave_exe(void)
+void modbus_slave_exe(uint8_t *uart_buff,uint8_t length)
 {
  uint8_t i,j,data;
 
+	//printf("UART BUFF:%s ; %d\r\n",uart_buff,length);
+	for(i=0;i<length;i++)
+	 incomming_modbus_serial( *(uart_buff+i));
+	modbus_timeout_now(); 
 	 if(modbus_kbhit() == TRUE)
 	 {
 	 //check address against our address, 0 is broadcast
@@ -364,11 +360,10 @@ void modbus_slave_exe(void)
 	 }
 	
 }
+#endif
 
-#define MODBUS_TYPE_MASTER 1
 #if (MODBUS_TYPE_MASTER==1)
 #define MODBUS_SLAVE_ADDRESS 0xF7
-int i;
 
 /*
 read_coils
@@ -456,9 +451,22 @@ exception master_modbus_read_input_registers(uint8_t address, uint16_t start_add
 
    return 0;
 }
-
-void modbus_master_exe(void)
+void read_for_me(char _func)
 {
+	if(_func ==1) master_modbus_read_coils(MODBUS_SLAVE_ADDRESS,0,8);
+	else if(_func ==2) master_modbus_read_discrete_input(MODBUS_SLAVE_ADDRESS,0,8);
+	else if(_func ==3) master_modbus_read_holding_registers(MODBUS_SLAVE_ADDRESS,0,8);
+	else if(_func ==4) master_modbus_read_input_registers(MODBUS_SLAVE_ADDRESS,0,8);
+		 
+	 
+}
+void modbus_master_exe(uint8_t *uart_buff,uint8_t length)
+{ 
+	uint8_t i;
+	//printf("UART BUFF:%s ; %d\r\n",uart_buff,length);
+	for(i=0;i<length;i++)
+	 incomming_modbus_serial( *(uart_buff+i));
+	modbus_timeout_now();
 	
 	if(modbus_kbhit() == TRUE)
 	 {
@@ -469,30 +477,33 @@ void modbus_master_exe(void)
          {
 						case FUNC_READ_COILS:    //read coils
 										printf("Coils: ");
-										
+										for(i=1; i < (modbus_rx.len); ++i)
+										printf("%02X ", modbus_rx.data[i]);
 										break;
 						case FUNC_READ_DISCRETE_INPUT:    //read inputs	
 										printf("Inputs: ");
-										
+										for(i=1; i < (modbus_rx.len); ++i)
+										printf("%02X ", modbus_rx.data[i]);
 										break;
 						case FUNC_READ_HOLDING_REGISTERS: 
 										printf("Holding Registers: ");
-										
-										break;
-						case FUNC_READ_INPUT_REGISTERS:
-							printf("Input Registers: ");
-						default:    //We don't support the function, so return exception
-
-						/*Started at 1 since 0 is quantity of coils*/
 										for(i=1; i < (modbus_rx.len); ++i)
 										printf("%02X ", modbus_rx.data[i]);
+										break;
+						case FUNC_READ_INPUT_REGISTERS:
+										printf("Input Registers: ");
+										for(i=1; i < (modbus_rx.len); ++i)
+										printf("%02X ", modbus_rx.data[i]);
+						//default:    //We don't support the function, so return exception
+
+						/*Started at 1 since 0 is quantity of coils*/
+						
 				 }
 			}				
 		 
 	 }
-	 //master_modbus_read_coils(MODBUS_SLAVE_ADDRESS,0,8);
-	 //master_modbus_read_discrete_input(MODBUS_SLAVE_ADDRESS,0,8);
-	 //master_modbus_read_holding_registers(MODBUS_SLAVE_ADDRESS,0,8);
-	 master_modbus_read_input_registers(MODBUS_SLAVE_ADDRESS,0,8);
+
 }
 #endif
+
+

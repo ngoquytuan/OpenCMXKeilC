@@ -24,7 +24,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h"
 #include "GPIO_STM32F10x.h"             // Keil::Device:GPIO
-#include "crc16.h"//for uart modbus get data
 #define ONTIME 1
 #define STOP   0
 /** @addtogroup STM32F10x_StdPeriph_Examples
@@ -150,7 +149,6 @@ void SysTick_Handler(void)
 	if (u1out > ONTIME) u1out--;
 	if (u2out > ONTIME) u2out--;
 	if (task100ms > ONTIME) task100ms--;
-	modbus_sticks++;//1ms
 }
 
 // USART Receiver buffer
@@ -182,7 +180,7 @@ void USART1_IRQHandler(void)
 }
 
 // USART2 Receiver buffer
-const uint8_t RX2_BUFFER_SIZE=20;
+const uint8_t RX2_BUFFER_SIZE = 50;
 uint8_t USART2_index=0,rx2_data_buff[RX2_BUFFER_SIZE];
 
 void USART2_IRQHandler(void)
@@ -191,17 +189,11 @@ void USART2_IRQHandler(void)
 	/* RXNE handler */
   if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
 	{
-		if(MODBUS == 1) incomming_modbus_serial(USART2->DR & (uint16_t)0x01FF);
-		else
-		{
 		//USART_ClearITPendingBit(USART1, USART_IT_RXNE);
 		RX2_data=(USART2->DR & (uint16_t)0x01FF);
 		u2out=50;// 50ms
 		rx2_data_buff[USART2_index++]=RX2_data;
-
-		if(USART2_index==RX2_BUFFER_SIZE) USART2_index=0;
-		}
-			
+		if(USART2_index == RX2_BUFFER_SIZE) USART2_index=0;	
 	}
 
 }

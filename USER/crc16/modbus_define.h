@@ -8,6 +8,24 @@
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
+
+#define MODBUS_TYPE_MASTER 0
+#if (MODBUS_TYPE_MASTER==1)
+#define MODBUS_SLAVE_ADDRESS 0xF7
+#endif
+
+#define MODBUS_TYPE_SLAVE 1
+#if (MODBUS_TYPE_SLAVE==1)
+#define MODBUS_TYPE MODBUS_TYPE_SLAVE
+//#define MODBUS_SERIAL_TYPE MODBUS_RTU     //use MODBUS_ASCII for ASCII mode
+#define MODBUS_SERIAL_RX_BUFFER_SIZE 64
+#define MODBUS_SERIAL_BAUD 115200
+
+
+#define MODBUS_GETDATA_TIMEOUT 40
+#define MODBUS_ADDRESS 0x11
+#endif
+
 #define int1   uint8_t
 #define int8   uint8_t
 #define int16  uint16_t
@@ -24,21 +42,8 @@
 #define TRUE  1
 
 
-#define MODBUS_TYPE MODBUS_TYPE_SLAVE
-//#define MODBUS_SERIAL_TYPE MODBUS_RTU     //use MODBUS_ASCII for ASCII mode
-#define MODBUS_SERIAL_RX_BUFFER_SIZE 64
-#define MODBUS_SERIAL_BAUD 115200
 
 
-#define MODBUS_GETDATA_TIMEOUT 40
-#define MODBUS_ADDRESS 0x11
-//#include "modbus.h"
-#define MODBUS_SERIAL_TIMEOUT      100000     //in us
-
-//phy layer rtu
-void modbus_check_timeout(void);
-uint32_t get_ticks(void);
-void modbus_enable_timeout(int1 enable);
 void modbus_timeout_now(void);
 
 #endif /* __MODBUSDEF_H */
