@@ -25,6 +25,10 @@
 #define MODBUS_PHY_LAYER_H
 
 extern uint8_t modbus_serial_new;
+extern uint8_t modbus_timeout_enabled;
+#if (MODBUS_TYPE == MODBUS_TYPE_MASTER)
+extern uint32_t modbus_serial_wait;
+#endif
 /********************************************************************
 These exceptions are defined in the MODBUS protocol.  These can be
 used by the slave to communicate problems with the transmission back

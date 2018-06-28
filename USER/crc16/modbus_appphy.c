@@ -29,7 +29,7 @@ uint32_t get_ticks(void)
 	return modbus_sticks;
 }
 /* status of between byte timeout */
-int1 modbus_timeout_enabled = _false;
+uint8_t modbus_timeout_enabled = _false;
 
 void set_ticks(uint32_t x)
 {

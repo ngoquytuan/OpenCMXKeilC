@@ -23,8 +23,8 @@
 #define FALSE 0
 #define TRUE  1
 
-//#define USE_WITH_PC 1
-//#define MODBUS_TYPE MODBUS_TYPE_SLAVE
+
+#define MODBUS_TYPE MODBUS_TYPE_SLAVE
 //#define MODBUS_SERIAL_TYPE MODBUS_RTU     //use MODBUS_ASCII for ASCII mode
 #define MODBUS_SERIAL_RX_BUFFER_SIZE 64
 #define MODBUS_SERIAL_BAUD 115200
@@ -33,13 +33,8 @@
 #define MODBUS_GETDATA_TIMEOUT 40
 #define MODBUS_ADDRESS 0x11
 //#include "modbus.h"
- #ifndef MODBUS_SERIAL_TIMEOUT
-  #if (MODBUS_SERIAL_TYPE == MODBUS_ASCII)
-   #define MODBUS_SERIAL_TIMEOUT    1000000
-  #else
-   #define MODBUS_SERIAL_TIMEOUT      10000     //in us
-  #endif
- #endif
+#define MODBUS_SERIAL_TIMEOUT      100000     //in us
+
 //phy layer rtu
 void modbus_check_timeout(void);
 uint32_t get_ticks(void);

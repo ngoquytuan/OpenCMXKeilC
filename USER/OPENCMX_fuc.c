@@ -134,7 +134,7 @@ void tasks(void)
     if (TimeDisplay == 1)
     {
       /* Display current time */
-			modbus_master_exe();
+			//modbus_master_exe();
       //Time_Display(RTC_GetCounter());
       TimeDisplay = 0;
     }
