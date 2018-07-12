@@ -1,32 +1,18 @@
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __MAIN_H
-#define __MAIN_H
+#ifndef __TIM_H
+#define __TIM_H
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x.h"
-#include "stm32f10x_it.h"
-#include "delay.h"
-#include "lcd16x2.h"
-#include "rtc.h"
-#include "uart.h"
-#include "OPENCMX.h"
-#include "eeprom_stm.h"
-#include "SimpleKalmanFilter.h"
-#include "adcdma.h"
-#include "crc16.h"
-#include "tim.h"
+
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
-#define ONTIME 1
-#define STOP   0
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
 
-#endif /* __MAIN_H */
-			
-	
-			
+void tim_RCC_Configuration(void);
+void tim_GPIO_Configuration(void);
+void tim_NVIC_Configuration(void);
+void tim_ex (void);
+void tim_irq_fuc(void);
 
-
-
-
-
+#endif /* __TIM_H */

@@ -334,7 +334,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F10X_HD</Define>
               <Undefine></Undefine>
-              <IncludePath>..\USER\delay;..\USER\uart;..\USER\rtc;..\USER\eeprom;..\USER\filter;..\USER\adcdma;..\USER\it;..\USER\lcd16x2;..\USER\crc16</IncludePath>
+              <IncludePath>..\USER\delay;..\USER\uart;..\USER\rtc;..\USER\eeprom;..\USER\filter;..\USER\adcdma;..\USER\it;..\USER\lcd16x2;..\USER\crc16;..\USER\tim</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -486,6 +486,16 @@
               <FileName>modbus_appphy.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\crc16\modbus_appphy.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>tim</GroupName>
+          <Files>
+            <File>
+              <FileName>tim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\tim\tim.c</FilePath>
             </File>
           </Files>
         </Group>

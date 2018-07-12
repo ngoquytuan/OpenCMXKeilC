@@ -27,7 +27,7 @@ External Clock frequency: 8.000000 MHz
 ///* Private macro -------------------------------------------------------------*/
 ///* Private variables ---------------------------------------------------------*/
 
-
+//GPIO_WriteBit(GPIOB, GPIO_Pin_9, (BitAction)(1 - GPIO_ReadOutputDataBit(GPIOB, GPIO_Pin_9)));
 int main(void)
 {
 	

@@ -46,6 +46,7 @@ __IO uint32_t task100ms = 100;
 //UART1 receiver timeout
 __IO uint32_t u1out = 50;// 50 is 50ms
 __IO uint32_t u2out = 50;// 50 is 50ms
+
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -217,7 +218,6 @@ void RTC_IRQHandler(void)
     /* Toggle LED1 */
     ledbit = !ledbit;
     GPIO_PinWrite(GPIOB, 8, ledbit);
-
     /* Enable time update */
     TimeDisplay = 1;
 
@@ -226,7 +226,15 @@ void RTC_IRQHandler(void)
     
   }
 }
-
+/**
+  * @brief  This function handles TIM2 global interrupt request.
+  * @param  None
+  * @retval None
+  */
+void TIM2_IRQHandler(void)
+{
+  tim_irq_fuc();
+}
 /******************************************************************************/
 /*                 STM32F10x Peripherals Interrupt Handlers                   */
 /*  Add here the Interrupt Handler for the used peripheral(s) (PPP), for the  */

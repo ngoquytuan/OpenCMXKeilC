@@ -25,6 +25,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x.h"
+#include "tim.h"
 extern __IO uint32_t TimeDisplay;
 extern __IO uint32_t TimingDelay;
 extern __IO uint32_t task1s;

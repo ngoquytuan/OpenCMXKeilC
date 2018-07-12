@@ -60,7 +60,7 @@ unsigned char HEXInStringToDec(unsigned char data)
 
 /**
   * @brief  test_eeprom
-  * @param  None
+  * @param  Call this fuction for test store data to eeprom
   * @retval  
   */	
 void test_eeprom(void)
@@ -88,8 +88,8 @@ void test_eeprom(void)
 }	
 /**
   * @brief  sw_eeprom_stm32
-  * @param  None
-  * @retval  
+  * @param  make some flash blocks come eeprom for store data
+  * @retval  just call this fuction
   */	
 void sw_eeprom_stm32(void)
 {
@@ -166,10 +166,10 @@ void tasks(void)
 		if(u2out == ONTIME)
 		{
 			u2out = STOP;// Da nhan du ban tin UART => Xy ly
-			//printf("UART2:%s\r\n",rx2_data_buff);
+			printf("UART2:%s\r\n",rx2_data_buff);
 			
 			//for modbus slave
-			modbus_slave_exe(rx2_data_buff, USART2_index);
+			//modbus_slave_exe(rx2_data_buff, USART2_index);
 			//for modbus master
 			//modbus_master_exe(rx2_data_buff, USART2_index);
 			
@@ -225,7 +225,7 @@ void hardware_init(void)
 	//USART1_Init();
 	USART2_Init();
 	delay_ms(1);
-	//printf("Kiem tra uart 2\r\n");
+	//printf("Kiem tra uart\r\n");
 	
 	
 	//test_eeprom();
@@ -245,6 +245,7 @@ void hardware_init(void)
   //WWDG_Init();
 	
 	SimpleKalmanFilter(2.0,2.0,0.001);
+	tim_ex();
 }
 			
 
