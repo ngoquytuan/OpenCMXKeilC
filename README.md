@@ -1,5 +1,8 @@
-# OpenCMX
-
+# Some examples of OpenCMX kit
+STM32F103RD
+# ADC
+# LCD 16x2
+# EEPROM Emulate
 Dùng thu vi?n modbus
 Khai báo các c?u hình t?i modbus_define.h
 modbus_sticks d?t t?i ng?t SysTick_Handler

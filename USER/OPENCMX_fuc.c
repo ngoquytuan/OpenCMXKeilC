@@ -123,6 +123,40 @@ void GPIO_config(void)
 	GPIO_PinConfigure(GPIOA, 0, GPIO_IN_PULL_UP, GPIO_MODE_INPUT);
 }
 
+void E24C32Test (void)
+{
+	uint8_t i;
+	uint8_t data[11]={10,110,12,150,20,4,2,50,30,6,4};
+	//EEPROM_WriteReg(0,1);
+	//EEPROM_W_Regs(1,10,data);
+	//printf("Write:%d\r\n",EEPROM_W_Regs(1,12,"Ngo Quy TUan"));
+//	for(i=0;i<30;i++)
+//	{
+//		EEPROM_WriteReg(i,4);
+//		delay_ms(3);
+//	}
+	EEPROM_W_Regs(1,14,"the package come");
+	for(i=0;i<15;i++)
+	{
+		printf("MEM %d: %c\r\n",i,EEPROM_ReadReg(i));
+	}
+//	printf("EEPROM_WriteReg(0x01,11):%d\r\n",EEPROM_WriteReg(0x01,0));
+//	printf("EEPROM_WriteReg(0x01,11):%d\r\n",EEPROM_WriteReg(0x02,0));
+//	printf("EEPROM_WriteReg(0x01,11):%d\r\n",EEPROM_WriteReg(0x03,0));
+//	printf("EEPROM_WriteReg(0x01,11):%d\r\n",EEPROM_WriteReg(0x04,0));
+//	printf("EEPROM_WriteReg(0x01,11):%d\r\n",EEPROM_WriteReg(0x05,0));
+//	printf("EEPROM_WriteReg(0x01,11):%d\r\n",EEPROM_WriteReg(0x06,0));
+//	printf("Write:%d\r\n",EEPROM_W_Regs(1,12,"Ngo Quy TUan"));
+//	printf("EEPROM 0x00: %d\r\n",EEPROM_ReadReg(0));
+//	printf("EEPROM 0x01: %d\r\n",EEPROM_ReadReg(1));
+//	printf("EEPROM 0x02: %d\r\n",EEPROM_ReadReg(2));
+//	printf("EEPROM 0x03: %d\r\n",EEPROM_ReadReg(3));
+//	printf("EEPROM 0x04: %d\r\n",EEPROM_ReadReg(4));
+//	printf("EEPROM 0x05: %d\r\n",EEPROM_ReadReg(5));
+//	printf("EEPROM 0x06: %d\r\n",EEPROM_ReadReg(6));
+//	printf("EEPROM 0x07: %d\r\n",EEPROM_ReadReg(7));
+}	
+
 /**
   * @brief  tasks
   * @param  None
@@ -130,14 +164,18 @@ void GPIO_config(void)
   */
 void tasks(void)
 {
-  		/* If 1s has been elapsed */
+int16_t adc0, adc1, adc2, adc3;  	
+
+	/* If 1s has been elapsed */
     if (TimeDisplay == 1)
     {
       /* Display current time */
-			
-			//for modbus master
-			//read_for_me(1);
-			
+			//printf("ADC!\r\n");
+			adc0 = readADC_SingleEnded(0);
+			adc1 = readADC_SingleEnded(1);
+			adc2 = readADC_SingleEnded(2);
+			adc3 = readADC_SingleEnded(3);
+			printf("ADS1115:%d,%d,%d,%d\r\n",adc0,adc1,adc2,adc3);
       //Time_Display(RTC_GetCounter());
       TimeDisplay = 0;
     }
@@ -190,6 +228,7 @@ RCC_ClocksTypeDef mcu_clk;
 
 void hardware_init(void)
 {
+	
 	SystemInit();
 	SystemCoreClockUpdate();
 	/* Setup SysTick Timer for 1 msec interrupts  */
@@ -245,7 +284,19 @@ void hardware_init(void)
   //WWDG_Init();
 	
 	SimpleKalmanFilter(2.0,2.0,0.001);
-	tim_ex();
+	//Run some timer examples
+	//tim_ex();
+	//ADS1015_ADDRESS
+	//ADS1115_init(0x48);
+	//printf("Init done!\r\n");
+	
+	/* Initialize the I2C EEPROM driver ----------------------------------------*/ 
+	
+	I2C_Config();
+	//EEPROM_init();
+	ADS1115_init();
+	//E24C32Test();
+
 }
 			
 

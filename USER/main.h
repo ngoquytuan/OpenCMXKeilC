@@ -14,6 +14,8 @@
 #include "adcdma.h"
 #include "crc16.h"
 #include "tim.h"
+#include "ads1015.h"
+
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 #define ONTIME 1

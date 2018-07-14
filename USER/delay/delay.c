@@ -9,8 +9,8 @@ void delay(__IO uint32_t num)
 {
 	__IO uint32_t index = 0;
 	
-	/* Default system clock is 64.98MHz */
-	for(index = (9 * 649800 * num); index != 0; index--);
+	/* Default system clock is 72.00MHz */
+	for(index = (9 * 720000 * num); index != 0; index--);
 }
 
 void delay_ms(__IO uint32_t num)
@@ -18,7 +18,7 @@ void delay_ms(__IO uint32_t num)
 	__IO uint32_t index = 0;
 	
 	/* Default system clock is 72MHz */
-	for(index = (9 * 650 * num); index != 0; index--);
+	for(index = (9 * 720 * num); index != 0; index--);
 }
 void delay_us(__IO uint32_t num)
 {
