@@ -1,7 +1,7 @@
 #include "i2c.h"
 #include "delay.h"
 
-void EEPROM_init(void)
+uint8_t EEPROM_init(void)
 {
 	uint16_t timeOut = 0xffff;
 	// Check connection to EEPROM
@@ -13,7 +13,7 @@ void EEPROM_init(void)
 				#ifdef DEBUG
 				printf("I2C connection error\r\n");
 				#endif
-				break;
+				return 0;
 			}
 	}
 	
@@ -26,13 +26,14 @@ void EEPROM_init(void)
 				#ifdef DEBUG
 				printf("Device not respond \r\n");
 				#endif
-				break;
+				return 0;
 			}
 	}
 	I2C_GenerateSTOP(I2C1,ENABLE);
 	#ifdef DEBUG
 	printf("EEPROM responded!\r\n");
 	#endif
+	return 1;
 }
 
 /** 

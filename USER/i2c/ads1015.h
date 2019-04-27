@@ -30,7 +30,7 @@
 /*=========================================================================
     I2C ADDRESS/BITS
     -----------------------------------------------------------------------*/
-    #define ADS1015_ADDRESS                 (0x90)    // 1001 000 (ADDR = GND)
+    #define ADS1x15_ADDR                 (0x90)    // 1001 000 (ADDR = GND)
 /*=========================================================================*/
 
 /*=========================================================================
@@ -117,6 +117,6 @@ typedef enum
   GAIN_EIGHT        = ADS1015_REG_CONFIG_PGA_0_512V,
   GAIN_SIXTEEN      = ADS1015_REG_CONFIG_PGA_0_256V
 } adsGain_t;
-void ADS1115_init(void);
+uint8_t ADS1115_init(void);
 uint16_t readADC_SingleEnded(uint8_t channel);
 #endif /* __ADS1015_H */

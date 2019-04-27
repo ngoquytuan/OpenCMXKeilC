@@ -39,7 +39,9 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 
+#ifdef USE_INTERNAL_RTC
 __IO uint32_t TimeDisplay = 0;
+#endif
 __IO uint32_t TimingDelay = 0;
 __IO uint32_t task1s = 1000;
 __IO uint32_t task100ms = 100;
@@ -181,8 +183,8 @@ void USART1_IRQHandler(void)
 }
 
 // USART2 Receiver buffer
-const uint8_t RX2_BUFFER_SIZE = 50;
-uint8_t USART2_index=0,rx2_data_buff[RX2_BUFFER_SIZE];
+//const uint8_t RX2_BUFFER_SIZE = 50;
+//uint8_t USART2_index=0,rx2_data_buff[RX2_BUFFER_SIZE];
 
 void USART2_IRQHandler(void)
 {
@@ -190,13 +192,30 @@ void USART2_IRQHandler(void)
 	/* RXNE handler */
   if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
 	{
+		//printf("USART_IT_RXNE\r\n");
 		//USART_ClearITPendingBit(USART1, USART_IT_RXNE);
 		RX2_data=(USART2->DR & (uint16_t)0x01FF);
 		u2out=50;// 50ms
 		rx2_data_buff[USART2_index++]=RX2_data;
 		if(USART2_index == RX2_BUFFER_SIZE) USART2_index=0;	
 	}
-
+	
+	  if(USART_GetITStatus(USART2, USART_IT_IDLE) != RESET)
+	{
+		/* Clear IDLE flag by reading status register first */
+    /* And follow by reading data register */
+    volatile uint32_t tmp;                  /* Must be volatile to prevent optimizations */
+    tmp = USART2->SR;                       /* Read status register */
+    tmp = USART2->DR;                       /* Read data register */
+    (void)tmp;                              /* Prevent compiler warnings */
+		
+		//USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+		//RX2_data=(USART2->DR & (uint16_t)0x01FF);
+		u2out=50;// 50ms
+		//rx2_data_buff[USART2_index++]=RX2_data;
+		//if(USART2_index == RX2_BUFFER_SIZE) USART2_index=0;	
+	}
+	
 }
 /******************************************************************************/
 /*            STM32F10x Peripherals Interrupt Handlers                        */
@@ -207,6 +226,7 @@ void USART2_IRQHandler(void)
   * @param  None
   * @retval None
   */
+#ifdef USE_INTERNAL_RTC
 uint8_t ledbit = 1;
 void RTC_IRQHandler(void)
 {
@@ -226,6 +246,7 @@ void RTC_IRQHandler(void)
     
   }
 }
+#endif
 /**
   * @brief  This function handles TIM2 global interrupt request.
   * @param  None
@@ -233,7 +254,9 @@ void RTC_IRQHandler(void)
   */
 void TIM2_IRQHandler(void)
 {
-  tim_irq_fuc();
+	#ifdef TEST_TIM
+		tim_irq_fuc();
+	#endif
 }
 /******************************************************************************/
 /*                 STM32F10x Peripherals Interrupt Handlers                   */

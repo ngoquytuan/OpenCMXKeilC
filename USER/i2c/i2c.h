@@ -29,12 +29,12 @@
 	 
 		#define EEPROM_ADDRESS_WRITE	0xAE
 		#define EEPROM_ADDRESS_READ	0xAF
-		void EEPROM_init(void);
+		uint8_t EEPROM_init(void);
 		uint8_t EEPROM_WriteReg(uint16_t WriteAddr, uint8_t Data);
 		uint8_t EEPROM_ReadReg(uint16_t addReg);
 		uint8_t EEPROM_W_Regs(uint16_t addr,uint16_t length,uint8_t* pdata);
 	 /*Fuctions*/
-	 void I2C_Config(void);
+	 uint8_t I2C_Config(void);
 	 uint8_t I2C_ReadReg(uint8_t deviceaddr,uint8_t addReg);
 	 uint8_t I2C_WriteReg(uint8_t deviceaddr,uint8_t addReg, uint8_t Data);
 

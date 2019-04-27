@@ -2,7 +2,7 @@
 #ifndef __LCD_16X2_H
 #define __LCD_16X2_H
 
-//LCD marco
+//LCD pin mapping for OPENCMX
 #define   LCD_RS(state)       GPIO_PinWrite(GPIOC, 12, state)
 #define   LCD_RW(state)       GPIO_PinWrite(GPIOC, 11, state)
 #define   LCD_EN(state)       GPIO_PinWrite(GPIOC, 10, state)

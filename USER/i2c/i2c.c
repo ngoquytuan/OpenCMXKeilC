@@ -7,7 +7,7 @@
   * @param  None
   * @retval None
   */
-void I2C_Config(void)
+uint8_t I2C_Config(void)
 {
 	uint16_t timeOut = 0xffff;
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -31,7 +31,7 @@ void I2C_Config(void)
 	/* Release I2C1 from reset state */
 	RCC_APB1PeriphResetCmd(RCC_APB1Periph_I2C1, DISABLE);
   /* Thiet lap che chay cho I2C */
-	I2C_InitStructure.I2C_ClockSpeed = 4000;
+	I2C_InitStructure.I2C_ClockSpeed = 300000;
 	I2C_InitStructure.I2C_Mode = I2C_Mode_I2C;
 	I2C_InitStructure.I2C_DutyCycle = I2C_DutyCycle_2;
 	I2C_InitStructure.I2C_OwnAddress1 = 0;
@@ -45,11 +45,13 @@ void I2C_Config(void)
 			#ifdef DEBUG
 			printf("I2C ERR\r\n");
 			#endif
-			break;}
+			return 0;
+		}
 	}
 	#ifdef DEBUG
 	printf("I2C1 init done!\r\n");
 	#endif
+	return 1;
 }
 
 

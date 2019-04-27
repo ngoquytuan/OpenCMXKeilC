@@ -26,7 +26,11 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x.h"
 #include "tim.h"
+#include "uart.h"
+#include "OPENCMX.h"
+#ifdef USE_INTERNAL_RTC
 extern __IO uint32_t TimeDisplay;
+#endif
 extern __IO uint32_t TimingDelay;
 extern __IO uint32_t task1s;
 extern __IO uint32_t task100ms; 
@@ -52,8 +56,8 @@ extern const uint8_t RX_BUFFER_SIZE0;
 extern uint8_t USART1_index,USART1_rx_data_buff[];
 void USART1_IRQHandler(void);
 
-extern const uint8_t RX2_BUFFER_SIZE;
-extern uint8_t USART2_index,rx2_data_buff[];
+//extern const uint8_t RX2_BUFFER_SIZE;
+//extern uint8_t USART2_index,rx2_data_buff[];
 void USART2_IRQHandler(void);
 void USART3_IRQHandler(void);
 
